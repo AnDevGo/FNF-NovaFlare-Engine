@@ -50,6 +50,9 @@ class Note extends FlxSprite
 		'No Animation'
 	];
 
+	public var mesh:modcharts.math.SustainStrip = null;
+    public var z:Float = 0;
+
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
 
 	public var strumTime:Float = 0;
