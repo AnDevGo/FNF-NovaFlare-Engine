@@ -712,13 +712,14 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
-		modManager = new ModManager(strumLineNotes, notes, camHUD, this);
-
 		keyboardDisplay = new KeyboardDisplay(ClientPrefs.data.comboOffset[4], ClientPrefs.data.comboOffset[5]);
 		keyboardDisplay.antialiasing = ClientPrefs.data.antialiasing;
 		keyboardDisplay.visible = ClientPrefs.data.keyboardDisplay;
 		add(keyboardDisplay);
 		keyboardDisplay.cameras = [camHUD];
+
+		modManager = new ModManager(strumLineNotes, notes, camHUD, this);
+		noteGroup.add(grpNoteSplashes);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -1211,6 +1212,8 @@ class PlayState extends MusicBeatState
 
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+
+			modcharts.integration.NoteMovement.getDefaultStrumPos(this);
 
 			for (i in 0...playerStrums.length)
 			{
