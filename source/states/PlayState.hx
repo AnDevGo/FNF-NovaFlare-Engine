@@ -326,8 +326,6 @@ class PlayState extends MusicBeatState
 
 	var diffBotplay:Bool;
 
-	public var modchart:Manager;
-
 	public function new()
 	{
 		super();
