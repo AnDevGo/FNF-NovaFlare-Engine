@@ -58,7 +58,7 @@ import crowplexus.iris.Iris;
 import crowplexus.hscript.Expr.Error as IrisError;
 import crowplexus.hscript.Printer;
 #end
-import modchart.Manager;
+import modcharts.ModManager;
 
 @:allow(backend.Replay)
 /**
@@ -97,6 +97,8 @@ class PlayState extends MusicBeatState
 
 	// event variables
 	private var isCameraOnForcedPos:Bool = false;
+
+	public var modManager:ModManager;
 
 	public var boyfriendMap:Map<String, Character> = new Map<String, Character>();
 	public var dadMap:Map<String, Character> = new Map<String, Character>();
@@ -705,13 +707,14 @@ class PlayState extends MusicBeatState
 		var splash:NoteSplash = new NoteSplash(100, 100);
 		splash.setupNoteSplash(100, 100);
 		grpNoteSplashes.add(splash);
-		noteGroup.add(grpNoteSplashes);
 		splash.alpha = 0.000001; // cant make it invisible or it won't allow precaching
 
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
 
 		generateSong(SONG.song);
+
+		modManager = new ModManager(strumLineNotes, notes, camHUD, this);
 
 		keyboardDisplay = new KeyboardDisplay(ClientPrefs.data.comboOffset[4], ClientPrefs.data.comboOffset[5]);
 		keyboardDisplay.antialiasing = ClientPrefs.data.antialiasing;
@@ -1211,9 +1214,6 @@ class PlayState extends MusicBeatState
 			generateStaticArrows(0);
 			generateStaticArrows(1);
 
-			modchart = new Manager();
-			addManager(modchart);
-
 			for (i in 0...playerStrums.length)
 			{
 				setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
@@ -1244,10 +1244,6 @@ class PlayState extends MusicBeatState
 				return true;
 			}
 			moveCameraSection();
-
-			
-            callOnHScript('onModChartStart', [modchart]);
-            
 
 			startTimer = new FlxTimer().start(Conductor.crochet / 1000 / playbackRate, function(tmr:FlxTimer)
 			{
@@ -1347,15 +1343,7 @@ class PlayState extends MusicBeatState
 	{
 		insert(members.indexOf(dadGroup), obj);
 	}
-
-	public function addManager(obj:Manager)
-	{
-		if (obj.playfields == null || obj.playfields.length == 0)
-			return;
-
-		add(obj);
-	}
-
+			
 	public function clearNotesBefore(time:Float)
 	{
 		var i:Int = unspawnNotes.length - 1;
