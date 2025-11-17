@@ -1822,7 +1822,7 @@ class FunkinLua
 		try
 		{
 			var isString:Bool = !FileSystem.exists(scriptName);
-			var result:Int = null;
+			var result:Int;
 			if (!isString)
 			{
 				var code:String = File.getContent(scriptName);
