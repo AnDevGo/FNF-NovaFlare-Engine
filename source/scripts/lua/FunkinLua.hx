@@ -65,6 +65,29 @@ class FunkinLua
 
 		// LuaL.dostring(lua, CLENSE);
 
+		try
+		{
+			var result:Int = LuaL.luau_loadsource(lua, scriptName, File.getContent(scriptName));
+					
+			if (result != Lua.LUA_OK)
+			{
+				var resultStr:String = Lua.tostring(lua, -1);
+				trace(resultStr);
+				#if (windows || mobile || js || wasm)
+				SUtil.showPopUp(resultStr, 'Error on lua script!');
+				#else
+				luaTrace('$scriptName\n$resultStr', true, false, FlxColor.RED);
+				#end
+				lua = null;
+				return;
+			}
+		}
+		catch (e:Dynamic)
+		{
+			trace(e);
+			return;
+		}
+
 		this.scriptName = scriptName.trim();
 		var game:PlayState = PlayState.instance;
 		if (game != null)
@@ -1818,29 +1841,6 @@ class FunkinLua
 		CustomSubstate.implement(this);
 		ShaderFunctions.implement(this);
 		DeprecatedFunctions.implement(this);
-
-		try
-		{
-			var result:Int = LuaL.luau_loadsource(lua, scriptName, File.getContent(scriptName));
-					
-			if (result != Lua.LUA_OK)
-			{
-				var resultStr:String = Lua.tostring(lua, -1);
-				trace(resultStr);
-				#if (windows || mobile || js || wasm)
-				SUtil.showPopUp(resultStr, 'Error on lua script!');
-				#else
-				luaTrace('$scriptName\n$resultStr', true, false, FlxColor.RED);
-				#end
-				lua = null;
-				return;
-			}
-		}
-		catch (e:Dynamic)
-		{
-			trace(e);
-			return;
-		}
 		
 		LuaRequire.init(lua, ["./", "mods/", "scripts/", "data/"]);
 
