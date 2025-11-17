@@ -1822,7 +1822,7 @@ class FunkinLua
 		try
 		{
 			var isString:Bool = !FileSystem.exists(scriptName);
-			var result:Dynamic = null;
+			var result:Int = null;
 			if (!isString)
 			{
 				var code:String = File.getContent(scriptName);
@@ -1877,54 +1877,20 @@ class FunkinLua
 
 	public static var lastCalledScript:FunkinLua = null;
 
-	public function call(func:String, args:Array<Dynamic>):Dynamic
-	{
-		if (closed)
-			return LuaUtils.Function_Continue;
+	public function call(func:String, args:Array<Dynamic>):Dynamic {
+		if(closed) return LuaUtils.Function_Continue;
 
 		lastCalledFunction = func;
 		lastCalledScript = this;
-		try
-		{
-			if (lua == null)
-				return LuaUtils.Function_Continue;
+		try {
+			if(lua == null) return LuaUtils.Function_Continue;
 
-			Lua.getglobal(lua, func);
-			var type:Int = Lua.type(lua, -1);
-
-			if (type != Lua.LUA_TFUNCTION)
-			{
-				if (type > Lua.LUA_TNIL)
-					luaTrace("ERROR (" + func + "): attempt to call a " + LuaUtils.typeToString(type) + " value", false, false, FlxColor.RED);
-
-				Lua.pop(lua, 1);
-				return LuaUtils.Function_Continue;
-			}
-
-			for (arg in args)
-				Convert.toLua(lua, arg);
-			var status:Int = Lua.pcall(lua, args.length, 1, 0);
-
-			// Checks if it's not successful, then show a error.
-			if (status != Lua.LUA_OK)
-			{
-				var error:String = getErrorMessage(status);
-				luaTrace("ERROR (" + func + "): " + error, false, false, FlxColor.RED);
-				return LuaUtils.Function_Continue;
-			}
-
-			// If successful, pass and then return the result.
-			var result:Dynamic = cast Convert.fromLua(lua, -1);
-			if (result == null)
-				result = LuaUtils.Function_Continue;
-
-			Lua.pop(lua, 1);
-			if (closed)
-				stop();
+			var result:Dynamic = Convert.callLuaFunction(lua, func, args, false);
+			if (result == null) result = LuaUtils.Function_Continue;
+			if(closed) stop();
 			return result;
 		}
-		catch (e:Dynamic)
-		{
+		catch (e:Dynamic) {
 			trace(e);
 		}
 		return LuaUtils.Function_Continue;
@@ -1939,6 +1905,8 @@ class FunkinLua
 	if (Type.typeof(data) == TFunction)
 	{
 		Lua_helper.add_callback(lua, variable, data);
+		Convert.toLua(lua, data);
+		Lua.setglobal(lua, variable);
 		return;
 	}
 
