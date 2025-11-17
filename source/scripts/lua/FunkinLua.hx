@@ -1821,13 +1821,7 @@ class FunkinLua
 
 		try
 		{
-			var isString:Bool = !FileSystem.exists(scriptName);
-			var result:Int;
-			if (!isString)
-			{
-				var code:String = File.getContent(scriptName);
-				result = LuaL.luau_loadsource(lua, scriptName, code);
-			}
+			var result:Int = LuaL.luau_loadsource(lua, scriptName, File.getContent(scriptName));
 					
 			if (result != Lua.LUA_OK)
 			{
@@ -1841,8 +1835,6 @@ class FunkinLua
 				lua = null;
 				return;
 			}
-			if (isString)
-				scriptName = 'unknown';
 		}
 		catch (e:Dynamic)
 		{
