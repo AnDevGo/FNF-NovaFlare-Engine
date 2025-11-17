@@ -1819,7 +1819,7 @@ class FunkinLua
 
 		try
 		{
-			var result:Int = LuaL.luau_loadsource(lua, scriptName, File.getContent(scriptName), false);
+			var result:Int = LuaL.luau_loadsource(lua, scriptName, File.getContent(scriptName));
 					
 			if (result != Lua.LUA_OK)
 			{
